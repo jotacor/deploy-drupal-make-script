@@ -35,8 +35,8 @@ NC='\033[00m'
 RED='\033[01;31m'
 
 usage() {
-  $ECHO "Usage: build.sh [-y] [-c] [-s] -p <PROJECT_NAME>>-e {pro|dev} " >&2
-  $ECHO "Use -p <PROJECT_NAME>, if not username by default." >&2
+  $ECHO "Usage: build.sh [-y] [-c] [-s] -p <PROJECT_NAME> -e {pro|dev} " >&2
+  $ECHO "Use -p <PROJECT_NAME>, if not, username will be the default name project." >&2
   $ECHO "Use -s to install your Drupal under ssl at first time." >&2
   $ECHO "Use -y to skip deletion confirmation." >&2
   $ECHO "Use -c to perform a clean installation and the first time installation." >&2
