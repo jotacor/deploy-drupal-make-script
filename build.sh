@@ -132,7 +132,7 @@ $DRUSH features-revert-all -y
 $DRUSH cc all
 
 # Leaving only last 4 releases
-$LS -dt $WORKDIR/releases/* | sed '1,4d' | xargs rm -rf
+$LS -dt $WORKDIR/releases/* | sed '1,4d' | xargs -I % sh -c 'chmod -R u+w %; rm -rf %;'
 
 # Returning where script was executed
 cd $OLDDIR
