@@ -12,10 +12,9 @@ ASK=true
 CAT=$(which cat)
 CHMOD=$(which chmod)
 CP=$(which cp)
-SCRIPTDIR=$(dirname $0)
 DATE=$(which date)
 DATETIME=$($DATE '+%Y%m%d%H%M')
-DESTINATION="../releases/$DATETIME"
+DESTINATION="./releases/$DATETIME"
 DRUSH=$(which drush)
 ECHO=$(which echo)
 CLEAN=false
@@ -48,8 +47,9 @@ usage() {
 
 # Positioning the script at the base of the structure
 OLDDIR=$(pwd)
-cd $SCRIPTDIR
+cd $(dirname $0)
 cd ..
+WORKDIR=$(pwd)
 
 # Check the options
 while getopts ye:cp: opt; do
@@ -74,7 +74,7 @@ if [ -z $ENVMNT ]; then
   usage
 fi
 
-if [ ! -f ./profile/drupal-org.make ]; then
+if [ ! -f $WORKDIR/profile/drupal-org.make ]; then
   $ECHO "[error] Run this script expecting ./profile/ directory."
   exit 1
 fi
@@ -84,17 +84,16 @@ $RMDIR $TEMP_BUILD
 
 # Build the profile.
 $ECHO -e "${GREEN}Building the profile...${NC}"
-$DRUSH make --no-cache --no-core --contrib-destination="." ./profile/$PROJECT-${ENVMNT}.make tmp
+$DRUSH make --no-cache --no-core --contrib-destination="." $WORKDIR/profile/$PROJECT-${ENVMNT}.make tmp
 
 # Build the distribution and copy the profile in place.
 $ECHO -e "${GREEN}Building the distribution...${NC}"
 $DRUSH make ./profile/drupal-org-core.make $TEMP_BUILD
 $ECHO -e "${GREEN}Moving to destination...${NC}"
-#$CP -r . $TEMP_BUILD/profiles/$PROJECT
 $MKDIR -p $TEMP_BUILD/profiles/$PROJECT
-$CP -r tmp/profiles/$PROJECT/* $TEMP_BUILD/profiles/$PROJECT
-$RM -rf tmp
-$MV $TEMP_BUILD $DESTINATION
+$CP -r ./tmp/profiles/$PROJECT/* $TEMP_BUILD/profiles/$PROJECT
+$RM -rf ./tmp
+$MV $TEMP_BUILD $WORKDIR/$DESTINATION
 
 # Create symblic links
 $ECHO -e "${GREEN}Creating symbolic links...${NC}"
@@ -109,21 +108,21 @@ cd ./www
 
 # Update database & clean
 if $CLEAN; then
-	$ECHO -e "${GREEN}Update database & cleaning...${NC}"
-	read -r -p "Give me the complete DOMAIN (ex: www.example.org): " DOMAIN
-	read -r -p "Give me the SITE NAME: " SITENAME
-	read -r -p "Give me the SITE MAIL: " SITEMAIL
-	read -r -p "Give me ROOT database password: " PASSWD
-	
-	$ECHO -e "${RED}You are about to DROP all the '$PROJECT' database.${NC}"
-	$DRUSH si --db-url=mysql://$PROJECT:$PROJECT@localhost/$PROJECT --db-su=root --db-su-pw=$PASSWD --site-mail="$SITEMAIL" --account-mail="$SITEMAIL" --uri="${SSL}$DOMAIN" $PROJECT
-	
-	$CHMOD u+w sites/default/settings.php
+    $ECHO -e "${GREEN}Update database & cleaning...${NC}"
+    read -r -p "Give me the complete DOMAIN (ex: www.example.org): " DOMAIN
+    read -r -p "Give me the SITE NAME: " SITENAME
+    read -r -p "Give me the SITE MAIL: " SITEMAIL
+    read -r -p "Give me ROOT database password: " PASSWD
+
+    $ECHO -e "${RED}You are about to DROP all the '$PROJECT' database.${NC}"
+    $DRUSH si --db-url=mysql://$PROJECT:$PROJECT@localhost/$PROJECT --db-su=root --db-su-pw=$PASSWD --site-mail="$SITEMAIL" --account-mail="$SITEMAIL" --uri="${SSL}$DOMAIN" $PROJECT
+
+    $CHMOD u+w sites/default/settings.php
     $ECHO "\$base_url='${SSL}$DOMAIN';" >> sites/default/settings.php
-	
+
     $CP ./sites/default/settings.php ../config/
 else
-  $CP ../config/settings.php sites/default/
+  $CP $WORKDIR/config/settings.php sites/default/
 fi
 
 $DRUSH cc all
@@ -132,8 +131,8 @@ $DRUSH cache-clear drush
 $DRUSH features-revert-all -y
 $DRUSH cc all
 
-# Cleaning releases
-$LS -t ../releases/* | sed '1,4d' | xargs rm -rf
+# Leaving only last 4 releases
+$LS -t $WORKDIR/releases/* | sed '1,4d' | xargs rm -rf
 
 # Returning where script was executed
 cd $OLDDIR
