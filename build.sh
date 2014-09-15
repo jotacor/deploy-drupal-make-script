@@ -84,7 +84,7 @@ $RMDIR $TEMP_BUILD
 
 # Build the profile.
 $ECHO -e "${GREEN}Building the profile...${NC}"
-$DRUSH make --no-cache --no-core --contrib-destination="." $WORKDIR/profile/$PROJECT-${ENVMNT}.make tmp
+$DRUSH make --no-core --contrib-destination="." $WORKDIR/profile/$PROJECT-${ENVMNT}.make tmp
 
 # Build the distribution and copy the profile in place.
 $ECHO -e "${GREEN}Building the distribution...${NC}"
