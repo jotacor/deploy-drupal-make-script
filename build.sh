@@ -120,7 +120,7 @@ if $CLEAN; then
     $CHMOD u+w sites/default/settings.php
     $ECHO "\$base_url='${SSL}$DOMAIN';" >> sites/default/settings.php
 
-    $CP ./sites/default/settings.php ../config/
+    $CP ./sites/default/settings.php $WORKDIR/config/
 else
   $CP $WORKDIR/config/settings.php sites/default/
 fi
