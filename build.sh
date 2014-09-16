@@ -52,7 +52,7 @@ cd ..
 WORKDIR=$(pwd)
 
 # Check the options
-while getopts ye:cp: opt; do
+while getopts ye:csp: opt; do
   case $opt in
     y) ASK=false ;;
     c) CLEAN=true ;;
