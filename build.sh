@@ -4,7 +4,7 @@ set -e
 #
 # Build the distribution using the same process used on Drupal.org
 #
-# Usage: scripts/build.sh [-y] <project> from the profile main directory.
+# Usage: scripts/build.sh [-y] <project> from the profile/.. main directory.
 #
 
 # Definning variables & constants
